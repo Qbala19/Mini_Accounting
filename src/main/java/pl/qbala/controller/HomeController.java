@@ -9,9 +9,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import pl.qbala.entity.Company;
 import pl.qbala.repository.CompanyRepository;
 import pl.qbala.service.CompanyService;
+import pl.qbala.service.HomeService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.Map;
 
 @Controller
 public class HomeController {
@@ -20,9 +24,18 @@ public class HomeController {
     CompanyRepository companyRepository;
     @Autowired
     CompanyService companyService;
+    @Autowired
+    HomeService homeService;
 
     @GetMapping("/")
-    public String home() {
+    public String home(Model model) {
+        Month month = LocalDate.now().getMonth();
+        model.addAttribute("month", month);
+        Map<String, Integer> dashboardPaymentDays = homeService.getDashboardPaymentDays();
+        model.addAttribute("zusDays", dashboardPaymentDays.get("zus"));
+        model.addAttribute("pitDays", dashboardPaymentDays.get("pit"));
+        model.addAttribute("vatDays", dashboardPaymentDays.get("vat"));
+        model.addAttribute("nearestFacture", homeService.getNearestFacture());
         return "home";
     }
 
@@ -54,6 +67,5 @@ public class HomeController {
             return "loginForm";
         }
     }
-
 
 }

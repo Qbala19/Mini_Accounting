@@ -10,11 +10,11 @@ public class Facture {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade=CascadeType.ALL)
-    private Company seller;
+    @ManyToOne(/*cascade = CascadeType.MERGE*/)
+    private Company contractor;
 
-    @ManyToOne(cascade=CascadeType.ALL)
-    private Company buyer;
+//    @ManyToOne
+//    private Company buyer;
 
     private String number;
 
@@ -35,6 +35,14 @@ public class Facture {
     private Boolean control = false;
 
     public Facture(){}
+
+    public Company getContractor() {
+        return contractor;
+    }
+
+    public void setContractor(Company contractor) {
+        this.contractor = contractor;
+    }
 
     public int getTaxQualification() {
         return taxQualification;
@@ -84,21 +92,21 @@ public class Facture {
         this.id = id;
     }
 
-    public Company getSeller() {
-        return seller;
-    }
-
-    public void setSeller(Company seller) {
-        this.seller = seller;
-    }
-
-    public Company getBuyer() {
-        return buyer;
-    }
-
-    public void setBuyer(Company buyer) {
-        this.buyer = buyer;
-    }
+//    public Company getSeller() {
+//        return seller;
+//    }
+//
+//    public void setSeller(Company seller) {
+//        this.seller = seller;
+//    }
+//
+//    public Company getBuyer() {
+//        return buyer;
+//    }
+//
+//    public void setBuyer(Company buyer) {
+//        this.buyer = buyer;
+//    }
 
     public String getNumber() {
         return number;
