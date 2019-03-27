@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import pl.qbala.entity.Company;
+import pl.qbala.entity.Facture;
 import pl.qbala.repository.CompanyRepository;
 import pl.qbala.service.CompanyService;
 import pl.qbala.service.HomeService;
@@ -15,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -66,6 +69,31 @@ public class HomeController {
         }catch (Exception e){
             return "loginForm";
         }
+    }
+
+    @GetMapping("/firmDetails")
+    public String firmDetails(Model model){
+        List<Company> contractors = companyRepository.findAll();
+        model.addAttribute("contractors", contractors);
+        List<Company> clients = companyRepository.findAllByType("Klient");
+        List<Company> suppliers = companyRepository.findAllByType("Dostawca");
+        float incomes = 0;
+        float costs = 0;
+        for (Company client: clients) {
+            for (Facture facture: client.getFactures()) {
+                incomes += facture.getPriceNet()*facture.getQuantity();
+            }
+        }
+        for (Company supplier: suppliers) {
+            for (Facture facture: supplier.getFactures()) {
+                costs += facture.getPriceNet()*facture.getQuantity();
+            }
+        }
+        model.addAttribute("incomes", incomes);
+        model.addAttribute("costs", costs);
+        model.addAttribute("clients", clients);
+        model.addAttribute("suppliers",suppliers);
+        return "firmDetails";
     }
 
 }
