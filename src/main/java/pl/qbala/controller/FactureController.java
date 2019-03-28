@@ -57,9 +57,26 @@ public class FactureController {
     }
 
     @GetMapping("/taxBook")
-    public String taxBook(Model model) {
-        List<Facture> allFactures = factureRepository.findAll();
-        model.addAttribute("allFactures", allFactures);
+    public String taxBook(Model model, HttpServletRequest request) {
+        String filter = request.getParameter("filter");
+        if("+".equals(filter)){
+            List<Company> clients = companyRepository.findAllByType("Klient");
+            List<Facture> clientFactures = new ArrayList<>();
+            clients.forEach(c-> c.getFactures().forEach(f-> clientFactures.add(f)));
+            clientFactures.forEach(f-> System.out.println(f.getNumber()));
+            model.addAttribute("allFactures", clientFactures);
+        }else if("-".equals(filter)){
+            List<Company> suppliers = companyRepository.findAllByType("Dostawca");
+            List<Facture> suppliersFactures = new ArrayList<>();
+            suppliers.forEach(s-> s.getFactures().forEach(f-> suppliersFactures.add(f)));
+            suppliersFactures.forEach(f-> System.out.println(f.getNumber()));
+            model.addAttribute("allFactures", suppliersFactures);
+        }
+        else{
+            List<Facture> allFactures = factureRepository.findAll();
+            allFactures.forEach(f-> System.out.println(f.getNumber()));
+            model.addAttribute("allFactures", allFactures);
+        }
         return "taxBook";
     }
 

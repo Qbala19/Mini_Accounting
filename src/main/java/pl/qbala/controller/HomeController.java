@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import pl.qbala.entity.Company;
 import pl.qbala.entity.Facture;
 import pl.qbala.repository.CompanyRepository;
+import pl.qbala.repository.FactureRepository;
 import pl.qbala.service.CompanyService;
 import pl.qbala.service.HomeService;
 
@@ -31,16 +32,23 @@ public class HomeController {
     CompanyService companyService;
     @Autowired
     HomeService homeService;
+    @Autowired
+    FactureRepository factureRepository;
 
     @GetMapping("/")
     public String home(Model model) {
-        Month month = LocalDate.now().getMonth();
+        LocalDate today = LocalDate.now();
+        model.addAttribute("today", today);
+        Month month = today.getMonth();
         model.addAttribute("month", month);
-        Map<String, Integer> dashboardPaymentDays = homeService.getDashboardPaymentDays();
+        Map<String, Long> dashboardPaymentDays = homeService.getDashboardPaymentDays();
         model.addAttribute("zusDays", dashboardPaymentDays.get("zus"));
         model.addAttribute("pitDays", dashboardPaymentDays.get("pit"));
         model.addAttribute("vatDays", dashboardPaymentDays.get("vat"));
-        model.addAttribute("nearestFacture", homeService.getNearestFacture());
+        Facture firstDeadline = factureRepository.findFirstByOrderByDeadline();
+        model.addAttribute("nearestFacture", firstDeadline);
+        model.addAttribute("factureDays", firstDeadline.getDeadline().toEpochDay()-LocalDate.now().toEpochDay());
+//        model.addAttribute("nearestFacture", homeService.getNearestFacture().);
         return "home";
     }
 

@@ -27,7 +27,7 @@ public class Company {
 
     private String type;
 
-    @OneToMany(mappedBy = "contractor", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "contractor", /*cascade = CascadeType.MERGE,*/ fetch = FetchType.EAGER)
     private List<Facture> factures = new ArrayList<>();
 
 //    @OneToMany(mappedBy = "seller", cascade = CascadeType.MERGE)

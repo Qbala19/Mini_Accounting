@@ -7,6 +7,7 @@ import pl.qbala.repository.FactureRepository;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,25 +18,19 @@ public class HomeService {
     @Autowired
     FactureRepository factureRepository;
 
-    public Map<String, Integer> getDashboardPaymentDays(){
-        Map<String,Integer> mapOfDeadlines = new HashMap<>();
+    public Map<String, Long> getDashboardPaymentDays(){
+        Map<String,Long> mapOfDeadlines = new HashMap<>();
 
         LocalDate now = LocalDate.now();
         LocalDate zusDeadline = LocalDate.of(now.getYear(), now.getMonth(), 15);
         LocalDate pitDeadline = LocalDate.of(now.getYear(), now.getMonth(), 20);
         LocalDate vatDeadline = LocalDate.of(now.getYear(), now.getMonth(), 25);
 
-        mapOfDeadlines.put("zus", zusDeadline.compareTo(now));
-        mapOfDeadlines.put("pit", pitDeadline.compareTo(now));
-        mapOfDeadlines.put("vat", vatDeadline.compareTo(now));
+        mapOfDeadlines.put("zus", zusDeadline.toEpochDay()- LocalDate.now().toEpochDay());
+        mapOfDeadlines.put("pit", pitDeadline.toEpochDay() - LocalDate.now().toEpochDay());
+        mapOfDeadlines.put("vat", vatDeadline.toEpochDay() - LocalDate.now().toEpochDay());
 
         return mapOfDeadlines;
-    }
-
-    public int getNearestFacture(){
-        Facture facture = factureRepository.findFirstByOrderByDeadline();
-        LocalDate deadline = facture.getDeadline();
-        return deadline.compareTo(LocalDate.now());
     }
 
 }
