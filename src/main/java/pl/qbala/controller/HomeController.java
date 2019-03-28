@@ -1,11 +1,13 @@
 package pl.qbala.controller;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import pl.qbala.entity.Company;
 import pl.qbala.entity.Facture;
 import pl.qbala.repository.CompanyRepository;
@@ -96,4 +98,30 @@ public class HomeController {
         return "firmDetails";
     }
 
+    @GetMapping("/passwordEdit")
+    public String password(){
+        return "passwordEdit";
+    }
+
+
+    @PostMapping("/passwordEdit")
+    public String passwordEdit(Model model, @RequestParam(name = "oldPassword") String oldPassword,
+                               @RequestParam(name = "newPassword") String newPassword,
+                               @RequestParam(name = "newPasswordConfirmation") String newPasswordConfirmation){
+        Company one = companyRepository.findOne(Long.parseLong("1"));
+        try {
+            Company company = companyService.checkLogin(one.getEmail(), oldPassword);
+            if(newPassword.equals(newPasswordConfirmation)){
+                company.setPassword(newPassword);
+                companyService.save(company);
+            }else {
+                model.addAttribute("result","Hasła się różnią!");
+                return "/passwordEdit";
+            }
+        }catch (Exception e){
+            model.addAttribute("result",e.getMessage());
+            return "/passwordEdit";
+        }
+        return "/passwordEditInformation";
+    }
 }

@@ -29,13 +29,13 @@ public class FactureController {
     CompanyRepository companyRepository;
 
     @GetMapping("/factureForm")
-    public String facture(Model model){
+    public String facture(Model model) {
         model.addAttribute("facture", new Facture());
         return "factureForm";
     }
 
     @PostMapping("/factureForm")
-    public String facture(@ModelAttribute Facture facture, HttpServletRequest request){
+    public String facture(@ModelAttribute Facture facture, HttpServletRequest request) {
         //factureRepository.save(facture);
         Company contractor = companyRepository.findOne(Long.parseLong(request.getParameter("compan")));
         facture.setContractor(contractor);
@@ -44,47 +44,52 @@ public class FactureController {
     }
 
     @GetMapping("/factureList")
-    public String list(Model model){
-        List<Facture> allFactures = factureRepository.findAll();
-        model.addAttribute("factures", allFactures);
+    public String list(Model model, HttpServletRequest request) {
+        String number = request.getParameter("number");
+        if (number != null) {
+            model.addAttribute("factures", factureRepository.findAllByNumberLike("%" + number + "%"));
+        } else {
+            List<Facture> allFactures = factureRepository.findAll();
+            model.addAttribute("factures", allFactures);
+        }
         return "factureList";
     }
 
     @GetMapping("/taxBook")
-    public String taxBook(Model model){
+    public String taxBook(Model model) {
         List<Facture> allFactures = factureRepository.findAll();
         model.addAttribute("allFactures", allFactures);
         return "taxBook";
     }
 
     @GetMapping("/factureEdit")
-    public String factureEdition(Model model, @RequestParam(name = "id") Long id){
+    public String factureEdition(Model model, @RequestParam(name = "id") Long id) {
         Facture facture = factureRepository.findOne(id);
-        model.addAttribute("facture",facture);
+        model.addAttribute("facture", facture);
         return "/factureForm";
     }
 
     @PostMapping("/factureEdit")
-    public String factureEdit(@ModelAttribute Facture facture, HttpServletRequest request){
+    public String factureEdit(@ModelAttribute Facture facture, HttpServletRequest request) {
         factureRepository.save(facture);
         return "redirect:" + request.getContextPath() + "/factureList";
     }
 
     @GetMapping("/factureDelete")
-    public String factureDelete(HttpServletRequest request, @RequestParam(name = "id") Long id){
+    public String factureDelete(HttpServletRequest request, @RequestParam(name = "id") Long id) {
         factureRepository.delete(id);
-        return "redirect:"+request.getContextPath()+"/factureList";
+        return "redirect:" + request.getContextPath() + "/factureList";
     }
 
     @GetMapping("/factureDetails")
-    public String factureDetails(Model model, @RequestParam(name = "id") Long id){
+    public String factureDetails(Model model, @RequestParam(name = "id") Long id) {
         model.addAttribute("facture", factureRepository.findOne(id));
         return "factureDetails";
     }
 
 
     @ModelAttribute("companies")
-    public List<Company> companies(){
+    public List<Company> companies() {
         List<Company> companies = companyRepository.findAll();
         return companies;
     }
