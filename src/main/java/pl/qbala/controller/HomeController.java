@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import pl.qbala.entity.Company;
 import pl.qbala.entity.Facture;
+import pl.qbala.entity.Reminder;
 import pl.qbala.repository.CompanyRepository;
 import pl.qbala.repository.FactureRepository;
+import pl.qbala.repository.ReminderRepository;
 import pl.qbala.service.CompanyService;
 import pl.qbala.service.HomeService;
 
@@ -34,10 +36,14 @@ public class HomeController {
     HomeService homeService;
     @Autowired
     FactureRepository factureRepository;
+    @Autowired
+    ReminderRepository reminderRepository;
 
     @GetMapping("/")
     public String home(Model model) {
         LocalDate today = LocalDate.now();
+        List<Reminder> reminders = reminderRepository.findAllByDate(today);
+        model.addAttribute("reminders", reminders);
         model.addAttribute("today", today);
         Month month = today.getMonth();
         model.addAttribute("month", month);
@@ -113,10 +119,11 @@ public class HomeController {
 
 
     @PostMapping("/passwordEdit")
-    public String passwordEdit(Model model, @RequestParam(name = "oldPassword") String oldPassword,
+    public String passwordEdit(HttpSession session, Model model, @RequestParam(name = "oldPassword") String oldPassword,
                                @RequestParam(name = "newPassword") String newPassword,
                                @RequestParam(name = "newPasswordConfirmation") String newPasswordConfirmation){
-        Company one = companyRepository.findOne(Long.parseLong("1"));
+//        Company one = companyRepository.findOne(Long.parseLong("1"));
+        Company one = (Company) session.getAttribute("company");
         try {
             Company company = companyService.checkLogin(one.getEmail(), oldPassword);
             if(newPassword.equals(newPasswordConfirmation)){
