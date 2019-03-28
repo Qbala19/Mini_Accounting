@@ -12,6 +12,7 @@ import pl.qbala.repository.CompanyRepository;
 import pl.qbala.repository.FactureRepository;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Controller
 public class CompanyController {
@@ -76,5 +77,14 @@ public class CompanyController {
         companyRepository.findOne(id).getFactures().forEach(f -> factureRepository.delete(f));
         companyRepository.delete(id);
         return "redirect:" + request.getContextPath() + "/companyList";
+    }
+
+    @GetMapping("/contractorDetails")
+    public String contractorDetails(@RequestParam(name = "id") Long id, Model model){
+        Company contractor = companyRepository.findOne(id);
+        List<Facture> allByContractor = factureRepository.findAllByContractor(contractor);
+        model.addAttribute("contractor", contractor);
+        model.addAttribute("contractorFactures", allByContractor);
+        return "contractorDetails";
     }
 }
