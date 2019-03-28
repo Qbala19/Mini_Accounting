@@ -36,6 +36,7 @@ public class FactureController {
 
     @PostMapping("/factureForm")
     public String facture(@ModelAttribute Facture facture, HttpServletRequest request) {
+        //Facture one = factureRepository.findOne(facture.getId());
         //factureRepository.save(facture);
         Company contractor = companyRepository.findOne(Long.parseLong(request.getParameter("compan")));
         facture.setContractor(contractor);
@@ -71,6 +72,8 @@ public class FactureController {
 
     @PostMapping("/factureEdit")
     public String factureEdit(@ModelAttribute Facture facture, HttpServletRequest request) {
+        Company contractor = companyRepository.findOne(Long.parseLong(request.getParameter("compan")));
+        facture.setContractor(contractor);
         factureRepository.save(facture);
         return "redirect:" + request.getContextPath() + "/factureList";
     }

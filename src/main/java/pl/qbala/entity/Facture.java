@@ -10,7 +10,7 @@ public class Facture {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(/*cascade = CascadeType.MERGE*/)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private Company contractor;
 
 //    @ManyToOne
